@@ -45,7 +45,6 @@ function mapStateToProps(state) {
         startSize: state.startSize.startSize,
         endSize: state.endSize.endSize,
         paginations: state.paginations.paginations,
-        paginationData: state.paginationData.paginationData,
         newPage: state.newPage.newPage,
     }
 }

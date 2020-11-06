@@ -3,7 +3,6 @@ export const big = "big";
 export const data = "data";
 export const list = "list";
 export const paginations = "paginations";
-export const paginationData = "paginationData";
 export const newPage = "newPage";
 export const size = "size";
 export const startSize = "startSize";

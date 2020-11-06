@@ -67,7 +67,6 @@ function mapStateToProps(state) {
         endSize: state.endSize.endSize,
         list: state.list.list,
         paginations: state.paginations.paginations,
-        paginationData: state.paginationData.paginationData,
         newPage: state.newPage.newPage,
         user: state.user.user,
         userView: state.userView.userView

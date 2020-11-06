@@ -5,7 +5,6 @@ big,
 data,
 list,
 paginations,
-paginationData,
 newPage,
 size,
 startSize,
@@ -23,22 +22,24 @@ export function requestSmall() {
                     dispatch(requestSmallSuccess(res.data));
                     dispatch(requestDataSuccess(res.data));
                     dispatch(changeNewPage(1));
-                    dispatch(changeList(page(res.data, state)));
+                    dispatch(changeList(page(res.data, 1)));
                     dispatch(changePaginations(pagination(res.data)));
-                    dispatch(changeSize(changesSize(res.data)));
-                    dispatch(changeStartSize(changesStartSize(state)));
-                    dispatch(changeEndSize(changesEndSize(res.data, state)));
+                    dispatch(changeSize(sizes(res.data)));
+                    dispatch(changeStartSize(startSizes(res.data, 1)));
+                    dispatch(changeEndSize(endSizes(res.data, res.data, 1)));
+                    dispatch(changeUserView(false));
                 })
                 .catch(e => console.log(e));
         }
         else {
             dispatch(requestDataSuccess(state.dataSmall.dataSmall));
             dispatch(changeNewPage(1));
-            dispatch(changeList(page(state.dataSmall.dataSmall, state)));
+            dispatch(changeList(page(state.dataSmall.dataSmall, 1)));
             dispatch(changePaginations(pagination(state.dataSmall.dataSmall)));
-            dispatch(changeSize(changesSize(state.dataSmall.dataSmall)));
-            dispatch(changeStartSize(changesStartSize(state)));
-            dispatch(changeEndSize(changesEndSize(state.dataSmall.dataSmall, state)));
+            dispatch(changeSize(sizes(state.dataSmall.dataSmall)));
+            dispatch(changeStartSize(startSizes(state.list.list, 1)));
+            dispatch(changeEndSize(endSizes(state.dataSmall.dataSmall, state.dataSmall.dataSmall, 1)));
+            dispatch(changeUserView(false));
         }
     }
 }
@@ -52,22 +53,24 @@ export function requestBig() {
                     dispatch(requestBigSuccess(res.data));
                     dispatch(requestDataSuccess(res.data));
                     dispatch(changeNewPage(1));
-                    dispatch(changeList(page(res.data, state)));
+                    dispatch(changeList(page(res.data, 1)));
                     dispatch(changePaginations(pagination(res.data)));
-                    dispatch(changeSize(changesSize(res.data)));
-                    dispatch(changeStartSize(changesStartSize(state)));
-                    dispatch(changeEndSize(changesEndSize(res.data, state)));
+                    dispatch(changeSize(sizes(res.data)));
+                    dispatch(changeStartSize(startSizes(res.data, state.newPage.newPage)));
+                    dispatch(changeEndSize(endSizes(page(res.data, 1), res.data, state.newPage.newPage)));
+                    dispatch(changeUserView(false));
                 })
                 .catch(e => console.log(e));
         }
         else {
             dispatch(requestDataSuccess(state.dataBig.dataBig));
             dispatch(changeNewPage(1));
-            dispatch(changeList(page(state.dataBig.dataBig, state)));
+            dispatch(changeList(page(state.dataBig.dataBig, 1)));
             dispatch(changePaginations(pagination(state.dataBig.dataBig)));
-            dispatch(changeSize(changesSize(state.dataBig.dataBig)));
-            dispatch(changeStartSize(changesStartSize(state)));
-            dispatch(changeEndSize(changesEndSize(state.dataBig.dataBig, state)));
+            dispatch(changeSize(sizes(state.dataBig.dataBig)));
+            dispatch(changeStartSize(startSizes(state.list.list, state.newPage.newPage)));
+            dispatch(changeEndSize(endSizes(page(state.dataBig.dataBig, 1), state.dataBig.dataBig, state.newPage.newPage)));
+            dispatch(changeUserView(false));
         }
     }
 }
@@ -92,19 +95,17 @@ export function clickUser(id) {
 export function deleteUser(id) {
     return (dispatch, getState) => {
         const state = getState();
-
+        dispatch(changeUserView(false));
         if (window.confirm("Удалить пользователя")) {
-            const data = state.data.data.concat();
-            data.splice(id, 1);
-            console.log(data);
+            const data = state.data.data;
+            data.splice(((state.newPage.newPage - 1) * 50) + id, 1);
+            
             dispatch(requestDataSuccess(data));
-            dispatch(changeNewPage(state.newPage.newPage));
-            dispatch(changeList(page(data, state)));
+            dispatch(changeList(page(data, state.newPage.newPage)));
+            dispatch(changeSize(sizes(data)));
+            dispatch(changeStartSize(startSizes(page(data, state.newPage.newPage), state.newPage.newPage)));
+            dispatch(changeEndSize(endSizes(page(data, state.newPage.newPage), data, state.newPage.newPage)));
             dispatch(changePaginations(pagination(data)));
-            dispatch(changePaginatioData(paginationPage(data, state)));
-            dispatch(changeSize(changesSize(data)));
-            dispatch(changeStartSize(changesStartSize(state)));
-            dispatch(changeEndSize(changesEndSize(data, state)));
         }
         else {
             alert("Вы нажали кнопку отмена")
@@ -126,7 +127,7 @@ export function sortIncrease(id) {
             }
         });
 
-        dispatch(changeList(page(sortItem, state)));
+        dispatch(changeList(page(sortItem, state.newPage.newPage)));
     }
 }
 
@@ -144,7 +145,7 @@ export function sortDecrease(id) {
             }
         });
 
-        dispatch(changeList(page(sortItem, state)));
+        dispatch(changeList(page(sortItem, state.newPage.newPage)));
     }
 }
 
@@ -153,10 +154,10 @@ export function nextPage(id) {
         const state = getState();
         
         dispatch(changeNewPage(id));
-        dispatch(changePaginatioData(paginationPage(state.data.data, state)));
-        dispatch(changeList(state.paginationData.paginationData, state));
-        dispatch(changeStartSize(changesStartSize(state)));
-        dispatch(changeEndSize(changesEndSize(state.data.data, state)));
+        dispatch(changeList(page(state.data.data, id)));
+        dispatch(changeStartSize(startSizes(page(state.data.data, id), id)));
+        dispatch(changeEndSize(endSizes(page(state.data.data, id), state.data.data, id)));
+        dispatch(changeUserView(false));
     }
 }
 
@@ -166,10 +167,10 @@ export function left() {
 
         if (state.newPage.newPage > 1) {
             dispatch(changeNewPage(state.newPage.newPage - 1));
-            dispatch(changePaginatioData(paginationPage(state.data.data, state)));
-            dispatch(changeList(state.paginationData.paginationData, state));
-            dispatch(changeStartSize(changesStartSize(state)));
-            dispatch(changeEndSize(changesEndSize(state.data.data, state)));
+            dispatch(changeList(page(state.data.data, state.newPage.newPage - 1)));
+            dispatch(changeStartSize(startSizes(page(state.data.data, state.newPage.newPage - 1), state.newPage.newPage - 1)));
+            dispatch(changeEndSize(endSizes(page(state.data.data, state.newPage.newPage - 1), state.data.data, state.newPage.newPage - 1)));
+            dispatch(changeUserView(false));
         }
     }
 }
@@ -180,19 +181,18 @@ export function right() {
 
         if (state.newPage.newPage < Math.ceil(state.data.data.length / 50)) {
             dispatch(changeNewPage(state.newPage.newPage + 1));
-            console.log(state);
-            dispatch(changePaginatioData(paginationPage(state.data.data, state)));
-            dispatch(changeList(state.paginationData.paginationData, state));
-            dispatch(changeStartSize(changesStartSize(state)));
-            dispatch(changeEndSize(changesEndSize(state.data.data, state)));
+            dispatch(changeList(page(state.data.data, state.newPage.newPage + 1)));
+            dispatch(changeStartSize(startSizes(page(state.data.data, state.newPage.newPage + 1), state.newPage.newPage + 1)));
+            dispatch(changeEndSize(endSizes(page(state.data.data, state.newPage.newPage + 1), state.data.data, state.newPage.newPage + 1)));
+            dispatch(changeUserView(false));
         }
     }
 }
 
-function page(data, state) {
+function page(data, page) {
     let list = [];
     let j = 0;
-    for (let i = (state.newPage.newPage - 1) * 50; i < (data.length <= 50 ? data.length : state.newPage.newPage * 50); i++) {
+    for (let i = (page - 1) * 50; i < (data.length <= 50 ? data.length : page * 50); i++) {
         if (i == data.length) {
             return list;
         }
@@ -212,50 +212,29 @@ function pagination(data) {
     return paginations;
 }
 
-function paginationPage(data, state) {
-    let paginationData = state.paginationData.paginationData;
-    let newPage = state.newPage.newPage;
-    let j = 0;
-    console.log(state);
-    if (data.length <= 50) {
-        paginationData = [];
-        newPage = 1;
-    }
-
-    for (let i = (newPage - 1) * 50; i < (data.length <= 50 ? data.length : newPage * 50); i++) {
-        paginationData[j] = data[i];
-        j++;
-    }
-    console.log(paginationData, newPage);
-    return paginationData;
-}
-
-function changesSize(data) {
+function sizes(data) {
     return data.length;
 }
 
-function changesStartSize(state) {
-    if(!state.paginationData.paginationData.length) {
+function startSizes(list, page) {
+    if(list.length < 50) {
         return 0;
     }
     else {
-        return state.paginationData.paginationData.length * (state.newPage.newPage - 1);
+        return list.length * (page - 1);
     }
     
 }
 
-function changesEndSize(data, state) {
-    if(!state.paginationData.paginationData.length && data.length < 50) {
+function endSizes(list, data, page) {
+    if(data.length < list.length * page) {
         return data.length;
     }
-    else if(!state.paginationData.paginationData.length && data.length > 50) {
-        return 50;
+    else if(list.length < 50) {
+        return list.length;
     }
-    else if (state.paginationData.paginationData.length * state.newPage.newPage > data.length) {
-        return data.length;
-    }
-    else if(state.paginationData.paginationData.length * state.newPage.newPage < data.length) {
-        return state.paginationData.paginationData.length * state.newPage.newPage;
+    else {
+        return list.length * page;
     }
 }
 
@@ -295,7 +274,6 @@ export function changeEndSize(numberEndSize) {
 }
 
 export function changeNewPage(numberNewPage) {
-    console.log(numberNewPage);
     return {
         type: newPage,
         numberNewPage
@@ -313,13 +291,6 @@ export function changePaginations(arrPaginations) {
     return {
         type: paginations,
         arrPaginations
-    }
-}
-
-export function changePaginatioData(arrPaginationData) {
-    return {
-        type: paginationData,
-        arrPaginationData
     }
 }
 
