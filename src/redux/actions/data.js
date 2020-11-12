@@ -1,16 +1,18 @@
 import axios from 'axios';
 import {
-small,
-big,
-data,
-list,
-paginations,
-newPage,
-size,
-startSize,
-endSize,
-user,
-userView,
+    small,
+    big,
+    data,
+    list,
+    paginations,
+    newPage,
+    size,
+    startSize,
+    endSize,
+    user,
+    userView,
+    addContacts,
+    key
 } from './actionTypes'
 
 export function requestSmall() {
@@ -189,6 +191,106 @@ export function right() {
     }
 }
 
+export function submitContact() {
+    return (dispatch, getState) => {
+        const state = getState();
+        let newData = [];
+        let newUser = new Object();
+        if(
+            document.querySelector('.form')[0].value &&
+            document.querySelector('.form')[1].value &&
+            document.querySelector('.form')[2].value &&
+            document.querySelector('.form')[3].value &&
+            document.querySelector('.form')[4].value &&
+            document.querySelector('.form')[5].value &&
+            document.querySelector('.form')[6].value &&
+            document.querySelector('.form')[7].value &&
+            document.querySelector('.form')[8].value
+        ) {
+            newUser['id'] = document.querySelector('.form')[0].value;
+            newUser['firstName'] = document.querySelector('.form')[1].value;
+            newUser['lastName'] = document.querySelector('.form')[2].value;
+            newUser['phone'] = document.querySelector('.form')[3].value;
+            newUser['email'] = document.querySelector('.form')[4].value;
+            newUser['address'] = new Object();
+            newUser['address']['city'] = document.querySelector('.form')[5].value;
+            newUser['address']['state'] = document.querySelector('.form')[6].value;
+            newUser['address']['streetAddress'] = document.querySelector('.form')[7].value;
+            newUser['address']['zip'] = document.querySelector('.form')[8].value;
+            newData = [...state.data.data];
+            newData.push(newUser);
+
+            dispatch(requestDataSuccess(newData));
+            dispatch(changeList(page(newData, state.newPage.newPage)));
+            dispatch(changeSize(sizes(newData)));
+            dispatch(changeStartSize(startSizes(page(newData, state.newPage.newPage), state.newPage.newPage)));
+            dispatch(changeEndSize(endSizes(page(newData, state.newPage.newPage), newData, state.newPage.newPage)));
+            dispatch(changePaginations(pagination(newData)));
+            dispatch(changeAdd(false));
+        }
+        else {
+            alert('Заполните все поля!!!');
+        }
+    }
+}
+
+export function viewForm() {
+    return (dispatch, getState) => {
+        const state = getState();
+
+        dispatch(changeKeys(addKeys(state.data.data)));
+        dispatch(changeAdd(true));
+    }
+}
+
+export function search() {
+    return (dispatch, getState) => {
+        const state = getState();
+
+        let j = 0;
+        let results = [];
+        let find = document.querySelector('.searchInput').value;
+
+        for(let i = 0; i < state.data.data.length; i++) {
+            for(let key in state.data.data[i]) {
+                let dataItem = state.data.data[i];
+                if(dataItem[key].toString().indexOf(`${find}`)!==-1) {
+                    results[j] = state.data.data[i];
+                    j++;
+                }
+            }
+        }
+
+        if(results.length == 0) {
+            alert('Ничего не найдено');
+        }
+        else {
+            dispatch(requestDataSuccess(results));
+            dispatch(changeList(page(results, 1)));
+            dispatch(changeSize(sizes(results)));
+            dispatch(changeStartSize(startSizes(page(results, 1), 1)));
+            dispatch(changeEndSize(endSizes(page(results, 1), results, 1)));
+            dispatch(changePaginations(pagination(results)));
+        }
+    }
+}
+
+export function cancel() {
+    return (dispatch) => {
+        dispatch(changeAdd(false));
+    }
+}
+
+function addKeys(data) {
+    let arrKeys = [];
+    
+    arrKeys.push(...Object.keys(data[0]), ...Object.keys(data[0]['address']));
+    arrKeys.splice(5, 2);
+    arrKeys.push('description');
+
+    return arrKeys;
+}
+
 function page(data, page) {
     let list = [];
     let j = 0;
@@ -235,6 +337,20 @@ function endSizes(list, data, page) {
     }
     else {
         return list.length * page;
+    }
+}
+
+export function changeKeys(arrKeys) {
+    return {
+        type: key,
+        arrKeys
+    }
+}
+
+export function changeAdd(booleanAdd) {
+    return {
+        type: addContacts,
+        booleanAdd
     }
 }
 

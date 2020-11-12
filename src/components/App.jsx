@@ -4,14 +4,54 @@ import TableThead from './TableThead';
 import DropDown from './DropDown';
 import Pagination from './Pagination';
 import Contact from './Contact'
+import InputForm from './InputForm'
 import 'bootstrap/dist/css/bootstrap.css'
 import { connect } from 'react-redux'
+import {viewForm, submitContact, cancel, search} from '../redux/actions/data';
 
 class App extends Component {
     render() {
         return (
             <div className="container scroll" style={{ width: '90%' }}>
                 <DropDown />
+                
+                {
+                    this.props.list
+                        ? 
+                        <div>
+                            <input type="text" placeholder="Search" className="searchInput" />
+
+                            <button onClick={this.props.search}>Search</button>
+
+                            {
+                                this.props.list && !this.props.addContact
+                                ? <button onClick={this.props.viewForm}>Add</button>
+                                : null
+                            }
+                        </div>
+                        : null
+                }
+                
+                {
+                    this.props.addContact
+                    ? <form className="form">
+                        {
+                            this.props.keys.map((input, index) => {
+                                return (
+                                    <InputForm
+                                        key={index}
+                                        input={input}
+                                        id={index}
+                                    />
+                                )
+                            })
+                        }
+                        <div className="button" onClick={this.props.submitContact}>Submit</div>
+                        <div className="button" onClick={this.props.cancel}>Cancel</div> 
+                    </form>
+                    : null
+                }
+                
 
                 {
                     this.props.paginations.length
@@ -69,8 +109,19 @@ function mapStateToProps(state) {
         paginations: state.paginations.paginations,
         newPage: state.newPage.newPage,
         user: state.user.user,
-        userView: state.userView.userView
+        userView: state.userView.userView,
+        addContact: state.addContact.addContact,
+        keys: state.keys.keys
     }
 }
 
-export default connect(mapStateToProps)(App)
+function mapDispatchToProps(dispatch) {
+    return {
+        viewForm: () => dispatch(viewForm()),
+        submitContact: () => dispatch(submitContact()),
+        cancel: () => dispatch(cancel()),
+        search: () => dispatch(search())
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App)

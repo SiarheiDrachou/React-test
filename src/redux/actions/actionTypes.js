@@ -9,3 +9,5 @@ export const startSize = "startSize";
 export const endSize = "endSize";
 export const user = "user";
 export const userView = "userView";
+export const addContacts = "addContacts"
+export const key = "key"

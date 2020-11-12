@@ -11,6 +11,8 @@ import newPage from './NewPageReducer'
 import paginations from './PaginationsReducer'
 import user from './UserReducer'
 import userView from './UserViewReducer'
+import addContact from './AddContact'
+import keys from './Keys'
 
 export default combineReducers({
     data,
@@ -23,5 +25,7 @@ export default combineReducers({
     newPage,
     paginations,
     user,
-    userView
+    userView,
+    addContact,
+    keys
 })
