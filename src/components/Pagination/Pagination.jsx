@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux'
-import { left, right, nextPage } from '../redux/actions/data';
+import { left, right, nextPage } from '../../redux/actions/data';
+import './Pagination.scss'
 
 const Pagination = props => (
     <ul className="pagination">

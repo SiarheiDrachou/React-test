@@ -1,12 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux'
-import {} from '../redux/actions/data';
+import './SearchContact.scss'
+import { search } from '../../redux/actions/data';
 
 const SearchContact = props => (
-    <div>
-        <input type="text" /> 
+    <div className="search">
+        <input  type="text" placeholder="Search" className="search__input searchInput" /> 
         
-        <button onClick={this.props.find}>Search</button>
+        <button className="search__button" onClick={props.search}>Search</button>
     </div>
 )
 
@@ -26,6 +27,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
+        search: () => dispatch(search())
     }
 }
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import './InputForm.scss'
 
 const inputForm = props => (
     props.input == 'description' 
@@ -9,7 +10,8 @@ const inputForm = props => (
         defaultValue="Description"
     ></textarea>
     : 
-    <input 
+    <input
+        className="form__input"
         type="text" 
         placeholder={props.input}
     />

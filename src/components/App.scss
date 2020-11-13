@@ -1,0 +1,64 @@
+.create {
+    width: 95%;
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    margin: 50px auto;
+}
+
+.form {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 0 10px;
+}
+
+.scroll {
+    width: 100%;
+    padding: 15px;
+    overflow-x: scroll;
+
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar{
+        width: 0px;
+    }
+}
+.table {
+    width: 95%;
+    margin: 20px auto;
+}
+
+th, td {
+    border: 1px solid black;
+}
+th {
+
+    p {
+        display: inline;
+    }
+}
+td {
+    padding: 5px 10px;
+}
+a {
+    color: black;
+}
+svg {
+    width: 20px;
+    height: 20px;
+}
+
+* {
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+
+html, body, p, h1, h2, h3, h4, h5, h6, ul {
+    margin: 0;
+    padding: 0;
+}
+
+a, button, select, input {
+  cursor: pointer;
+}

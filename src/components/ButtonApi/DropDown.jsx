@@ -1,9 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux'
-import {requestSmall, requestBig} from '../redux/actions/data';
+import {requestSmall, requestBig} from '../../redux/actions/data';
+import './DropDown.scss'
 
 const DropDown = props => (
-    <div>
+    <div className="drop">
         <div className="dropdown m-5">
             <button
                 className="btn btn-secondary mr-5"

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux'
-import { sortIncrease, sortDecrease } from '../redux/actions/data';
+import { sortIncrease, sortDecrease } from '../../redux/actions/data';
 
 const TableThead = props => (
     <thead className="thead-dark w-50">

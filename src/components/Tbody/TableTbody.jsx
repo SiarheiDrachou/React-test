@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux'
-import { clickUser, deleteUser } from '../redux/actions/data';
+import { clickUser, deleteUser } from '../../redux/actions/data';
 
 const TableTbody = props => (
     <tr>
