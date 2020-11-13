@@ -13,15 +13,6 @@ const SearchContact = props => (
 
 function mapStateToProps(state) {
     return {
-        data: state.data.data,
-        dataSmall: state.dataSmall.dataSmall,
-        dataBig: state.dataBig.dataBig,
-        size: state.size.size,
-        startSize: state.startSize.startSize,
-        endSize: state.endSize.endSize,
-        list: state.list.list,
-        paginations: state.paginations.paginations,
-        newPage: state.newPage.newPage,
     }
 }
 

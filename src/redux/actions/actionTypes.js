@@ -1,13 +1,10 @@
 export const small = "small";
 export const big = "big";
-export const data = "data";
+export const deleteUsers = "deleteUsers";
 export const list = "list";
-export const paginations = "paginations";
 export const newPage = "newPage";
-export const size = "size";
-export const startSize = "startSize";
-export const endSize = "endSize";
 export const user = "user";
 export const userView = "userView";
 export const addContacts = "addContacts"
-export const key = "key"
+export const addNewUser = "addNewUser"
+export const searchUser = "searchUser"

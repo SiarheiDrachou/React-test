@@ -1,47 +1,48 @@
 import axios from 'axios';
 import {
+    deleteUsers,
     small,
     big,
-    data,
     list,
-    paginations,
     newPage,
-    size,
-    startSize,
-    endSize,
     user,
     userView,
     addContacts,
-    key
+    addNewUser,
+    searchUser
 } from './actionTypes'
 
 export function requestSmall() {
     return async (dispatch, getState) => {
         const state = getState();
-        if (state.dataSmall.dataSmall === null) {
+
+        if (state.variables.dataSmall === null) {
             await axios.get(`http://www.filltext.com/?rows=33&id={number|1000}&firstName={firstName}&lastName={lastName}&email={email}&phone={phone|(xxx)xxx-xx-xx}&address={addressObject}&description={lorem|5}`)
                 .then(res => {
-                    dispatch(requestSmallSuccess(res.data));
-                    dispatch(requestDataSuccess(res.data));
-                    dispatch(changeNewPage(1));
-                    dispatch(changeList(page(res.data, 1)));
-                    dispatch(changePaginations(pagination(res.data)));
-                    dispatch(changeSize(sizes(res.data)));
-                    dispatch(changeStartSize(startSizes(res.data, 1)));
-                    dispatch(changeEndSize(endSizes(res.data, res.data, 1)));
-                    dispatch(changeUserView(false));
+                    dispatch(requestSmallSuccess(
+                        res.data, 
+                        1, 
+                        sizes(res.data), 
+                        startSizes(res.data, 1), 
+                        endSizes(res.data, res.data, 1),
+                        page(res.data, 1),
+                        pagination(res.data),
+                        false
+                    ));
                 })
                 .catch(e => console.log(e));
         }
         else {
-            dispatch(requestDataSuccess(state.dataSmall.dataSmall));
-            dispatch(changeNewPage(1));
-            dispatch(changeList(page(state.dataSmall.dataSmall, 1)));
-            dispatch(changePaginations(pagination(state.dataSmall.dataSmall)));
-            dispatch(changeSize(sizes(state.dataSmall.dataSmall)));
-            dispatch(changeStartSize(startSizes(state.list.list, 1)));
-            dispatch(changeEndSize(endSizes(state.dataSmall.dataSmall, state.dataSmall.dataSmall, 1)));
-            dispatch(changeUserView(false));
+            dispatch(requestSmallSuccess(
+                state.variables.dataSmall, 
+                1, 
+                sizes(state.variables.dataSmall), 
+                startSizes(state.variables.list, 1), 
+                endSizes(state.variables.dataSmall, state.variables.dataSmall, 1),
+                page(state.variables.dataSmall, 1),
+                pagination(state.variables.dataSmall),
+                false
+            ));
         }
     }
 }
@@ -49,30 +50,33 @@ export function requestSmall() {
 export function requestBig() {
     return async (dispatch, getState) => {
         const state = getState();
-        if (state.dataBig.dataBig === null) {
+        if (state.variables.dataBig === null) {
             await axios.get(`http://www.filltext.com/?rows=1000&id={number|1000}&firstName={firstName}&lastName={lastName}&email={email}&phone={phone|(xxx)xxx-xx-xx}&address={addressObject}&description={lorem|32}`)
                 .then(res => {
-                    dispatch(requestBigSuccess(res.data));
-                    dispatch(requestDataSuccess(res.data));
-                    dispatch(changeNewPage(1));
-                    dispatch(changeList(page(res.data, 1)));
-                    dispatch(changePaginations(pagination(res.data)));
-                    dispatch(changeSize(sizes(res.data)));
-                    dispatch(changeStartSize(startSizes(res.data, state.newPage.newPage)));
-                    dispatch(changeEndSize(endSizes(page(res.data, 1), res.data, state.newPage.newPage)));
-                    dispatch(changeUserView(false));
+                    dispatch(requestBigSuccess(
+                        res.data, 
+                        1, 
+                        sizes(res.data), 
+                        startSizes(res.data, 1), 
+                        endSizes(page(res.data, 1), res.data, 1),
+                        page(res.data, 1),
+                        pagination(res.data),
+                        false
+                    ));
                 })
                 .catch(e => console.log(e));
         }
         else {
-            dispatch(requestDataSuccess(state.dataBig.dataBig));
-            dispatch(changeNewPage(1));
-            dispatch(changeList(page(state.dataBig.dataBig, 1)));
-            dispatch(changePaginations(pagination(state.dataBig.dataBig)));
-            dispatch(changeSize(sizes(state.dataBig.dataBig)));
-            dispatch(changeStartSize(startSizes(state.list.list, state.newPage.newPage)));
-            dispatch(changeEndSize(endSizes(page(state.dataBig.dataBig, 1), state.dataBig.dataBig, state.newPage.newPage)));
-            dispatch(changeUserView(false));
+            dispatch(requestBigSuccess(
+                state.variables.dataBig, 
+                1, 
+                sizes(state.variables.dataBig), 
+                startSizes(state.variables.list, 1), 
+                endSizes(page(state.variables.dataBig, 1), state.variables.dataBig, 1),
+                page(state.variables.dataBig, 1),
+                pagination(state.variables.dataBig),
+                false
+            ));
         }
     }
 }
@@ -81,33 +85,31 @@ export function clickUser(id) {
     return (dispatch, getState) => {
         const state = getState();
 
-        dispatch(changeUser(state.list.list[id]));
-        dispatch(changeUserView(true));
-        let height = document.querySelector('.scroll').scrollHeight;
+        dispatch(changeUser(state.variables.list[id], true));
 
-        setTimeout(() => {
-            window.scrollTo({
-                top: height,
-                behavior: "smooth"
-            });
-        });
+        scroll();
     }
 }
 
 export function deleteUser(id) {
     return (dispatch, getState) => {
         const state = getState();
+
         dispatch(changeUserView(false));
+
         if (window.confirm("Удалить пользователя")) {
-            const data = state.data.data;
-            data.splice(((state.newPage.newPage - 1) * 50) + id, 1);
-            
-            dispatch(requestDataSuccess(data));
-            dispatch(changeList(page(data, state.newPage.newPage)));
-            dispatch(changeSize(sizes(data)));
-            dispatch(changeStartSize(startSizes(page(data, state.newPage.newPage), state.newPage.newPage)));
-            dispatch(changeEndSize(endSizes(page(data, state.newPage.newPage), data, state.newPage.newPage)));
-            dispatch(changePaginations(pagination(data)));
+            const data = state.variables.data;
+
+            data.splice(((state.variables.newPage - 1) * 50) + id, 1);
+
+            dispatch(changeDeleteUser(
+                data,
+                page(data, state.variables.newPage),
+                sizes(data),
+                startSizes(page(data, state.variables.newPage), state.variables.newPage),
+                endSizes(page(data, state.variables.newPage), data, state.variables.newPage),
+                pagination(data)
+            ));
         }
         else {
             alert("Вы нажали кнопку отмена")
@@ -118,7 +120,7 @@ export function deleteUser(id) {
 export function sortIncrease(id) {
     return (dispatch, getState) => {
         const state = getState();
-        const sortItem = state.list.list;
+        const sortItem = state.variables.list;
 
         sortItem.sort(function (a, b) {
             if (a[`${id}`] > b[`${id}`]) {
@@ -129,14 +131,14 @@ export function sortIncrease(id) {
             }
         });
 
-        dispatch(changeList(page(sortItem, state.newPage.newPage)));
+        dispatch(changeList(page(sortItem, state.variables.newPage)));
     }
 }
 
 export function sortDecrease(id) {
     return (dispatch, getState) => {
         const state = getState();
-        const sortItem = state.list.list;
+        const sortItem = state.variables.list;
 
         sortItem.sort(function (a, b) {
             if (a[`${id}`] > b[`${id}`]) {
@@ -147,7 +149,7 @@ export function sortDecrease(id) {
             }
         });
 
-        dispatch(changeList(page(sortItem, state.newPage.newPage)));
+        dispatch(changeList(page(sortItem, state.variables.newPage)));
     }
 }
 
@@ -155,11 +157,13 @@ export function nextPage(id) {
     return (dispatch, getState) => {
         const state = getState();
         
-        dispatch(changeNewPage(id));
-        dispatch(changeList(page(state.data.data, id)));
-        dispatch(changeStartSize(startSizes(page(state.data.data, id), id)));
-        dispatch(changeEndSize(endSizes(page(state.data.data, id), state.data.data, id)));
-        dispatch(changeUserView(false));
+        dispatch(changeNewPage(
+            id,
+            page(state.variables.data, id),
+            startSizes(page(state.variables.data, id), id),
+            endSizes(page(state.variables.data, id), state.variables.data, id),
+            false
+        ));
     }
 }
 
@@ -167,12 +171,14 @@ export function left() {
     return (dispatch, getState) => {
         const state = getState();
 
-        if (state.newPage.newPage > 1) {
-            dispatch(changeNewPage(state.newPage.newPage - 1));
-            dispatch(changeList(page(state.data.data, state.newPage.newPage - 1)));
-            dispatch(changeStartSize(startSizes(page(state.data.data, state.newPage.newPage - 1), state.newPage.newPage - 1)));
-            dispatch(changeEndSize(endSizes(page(state.data.data, state.newPage.newPage - 1), state.data.data, state.newPage.newPage - 1)));
-            dispatch(changeUserView(false));
+        if (state.variables.newPage > 1) {
+            dispatch(changeNewPage(
+                state.variables.newPage - 1,
+                page(state.variables.data, state.variables.newPage - 1),
+                startSizes(page(state.variables.data, state.variables.newPage - 1), state.variables.newPage - 1),
+                endSizes(page(state.variables.data, state.variables.newPage - 1), state.variables.data, state.variables.newPage - 1),
+                false
+            ));
         }
     }
 }
@@ -181,12 +187,14 @@ export function right() {
     return (dispatch, getState) => {
         const state = getState();
 
-        if (state.newPage.newPage < Math.ceil(state.data.data.length / 50)) {
-            dispatch(changeNewPage(state.newPage.newPage + 1));
-            dispatch(changeList(page(state.data.data, state.newPage.newPage + 1)));
-            dispatch(changeStartSize(startSizes(page(state.data.data, state.newPage.newPage + 1), state.newPage.newPage + 1)));
-            dispatch(changeEndSize(endSizes(page(state.data.data, state.newPage.newPage + 1), state.data.data, state.newPage.newPage + 1)));
-            dispatch(changeUserView(false));
+        if (state.variables.newPage < Math.ceil(state.variables.data.length / 50)) {
+            dispatch(changeNewPage(
+                state.variables.newPage + 1,
+                page(state.variables.data, state.variables.newPage + 1),
+                startSizes(page(state.variables.data, state.variables.newPage + 1), state.variables.newPage + 1),
+                endSizes(page(state.variables.data, state.variables.newPage + 1), state.variables.data, state.variables.newPage + 1),
+                false
+            ));
         }
     }
 }
@@ -217,16 +225,18 @@ export function submitContact() {
             newUser['address']['state'] = document.querySelector('.form')[6].value;
             newUser['address']['streetAddress'] = document.querySelector('.form')[7].value;
             newUser['address']['zip'] = document.querySelector('.form')[8].value;
-            newData = [...state.data.data];
+            newData = [...state.variables.data];
             newData.push(newUser);
 
-            dispatch(requestDataSuccess(newData));
-            dispatch(changeList(page(newData, state.newPage.newPage)));
-            dispatch(changeSize(sizes(newData)));
-            dispatch(changeStartSize(startSizes(page(newData, state.newPage.newPage), state.newPage.newPage)));
-            dispatch(changeEndSize(endSizes(page(newData, state.newPage.newPage), newData, state.newPage.newPage)));
-            dispatch(changePaginations(pagination(newData)));
-            dispatch(changeAdd(false));
+            dispatch(changeAddUser(
+                newData,
+                page(newData, state.variables.newPage),
+                sizes(newData),
+                startSizes(page(newData, state.variables.newPage), state.variables.newPage),
+                endSizes(page(newData, state.variables.newPage), newData, state.variables.newPage),
+                pagination(newData),
+                false
+            ));
         }
         else {
             alert('Заполните все поля!!!');
@@ -238,8 +248,7 @@ export function viewForm() {
     return (dispatch, getState) => {
         const state = getState();
 
-        dispatch(changeKeys(addKeys(state.data.data)));
-        dispatch(changeAdd(true));
+        dispatch(changeAdd(true, addKeys(state.variables.data)));
     }
 }
 
@@ -251,11 +260,11 @@ export function search() {
         let results = [];
         let find = document.querySelector('.searchInput').value;
 
-        for(let i = 0; i < state.data.data.length; i++) {
-            for(let key in state.data.data[i]) {
-                let dataItem = state.data.data[i];
+        for(let i = 0; i < state.variables.data.length; i++) {
+            for(let key in state.variables.data[i]) {
+                let dataItem = state.variables.data[i];
                 if(dataItem[key].toString().indexOf(`${find}`)!==-1) {
-                    results[j] = state.data.data[i];
+                    results[j] = state.variables.data[i];
                     j++;
                 }
             }
@@ -265,25 +274,39 @@ export function search() {
             alert('Ничего не найдено');
         }
         else {
-            dispatch(requestDataSuccess(results));
-            dispatch(changeList(page(results, 1)));
-            dispatch(changeSize(sizes(results)));
-            dispatch(changeStartSize(startSizes(page(results, 1), 1)));
-            dispatch(changeEndSize(endSizes(page(results, 1), results, 1)));
-            dispatch(changePaginations(pagination(results)));
+            dispatch(changeSearchUser(
+                results,
+                page(results, 1),
+                1,
+                sizes(results),
+                startSizes(page(results, 1), 1),
+                endSizes(page(results, 1), results, 1),
+                pagination(results)
+            ));
         }
     }
 }
 
 export function cancel() {
     return (dispatch) => {
-        dispatch(changeAdd(false));
+        dispatch(changeAdd(false, []));
     }
+}
+
+function scroll() {
+    let height = document.querySelector('.scroll').scrollHeight;
+
+    setTimeout(() => {
+        window.scrollTo({
+            top: height,
+            behavior: "smooth"
+        });
+    });
 }
 
 function addKeys(data) {
     let arrKeys = [];
-    
+
     arrKeys.push(...Object.keys(data[0]), ...Object.keys(data[0]['address']));
     arrKeys.splice(5, 2);
     arrKeys.push('description');
@@ -340,24 +363,61 @@ function endSizes(list, data, page) {
     }
 }
 
-export function changeKeys(arrKeys) {
+export function changeSearchUser(
+    arrData,
+    arrList,
+    numberNewPage,
+    numberSize,
+    numberStartSize, 
+    numberEndSize,
+    arrPaginations
+) {
     return {
-        type: key,
+        type: searchUser,
+        arrData,
+        arrList,
+        numberSize,
+        numberStartSize, 
+        numberEndSize,
+        arrPaginations,
+        numberNewPage
+    }
+}
+
+export function changeAdd(booleanAdd, arrKeys ) {
+    return {
+        type: addContacts,
+        booleanAdd, 
         arrKeys
     }
 }
 
-export function changeAdd(booleanAdd) {
+export function changeAddUser(
+    arrData,
+    arrList,
+    numberSize,
+    numberStartSize, 
+    numberEndSize,
+    arrPaginations,
+    booleanAdd
+) {
     return {
-        type: addContacts,
+        type: addNewUser,
+        arrData,
+        arrList,
+        numberSize,
+        numberStartSize, 
+        numberEndSize,
+        arrPaginations,
         booleanAdd
     }
 }
 
-export function changeUser(arrUser) {
+export function changeUser(arrUser, booleanView) {
     return {
         type: user,
-        arrUser
+        arrUser,
+        booleanView
     }
 }
 
@@ -368,31 +428,20 @@ export function changeUserView(booleanView) {
     }
 }
 
-export function changeSize(numberSize) {
-    return {
-        type: size,
-        numberSize
-    }
-}
-
-export function changeStartSize(numberStartSize) {
-    return {
-        type: startSize,
-        numberStartSize
-    }
-}
-
-export function changeEndSize(numberEndSize) {
-    return {
-        type: endSize,
-        numberEndSize
-    }
-}
-
-export function changeNewPage(numberNewPage) {
+export function changeNewPage(
+    numberNewPage,
+    arrList,
+    numberStartSize,
+    numberEndSize,
+    booleanUserView
+) {
     return {
         type: newPage,
-        numberNewPage
+        numberNewPage,
+        arrList,
+        numberStartSize,
+        numberEndSize,
+        booleanUserView
     }
 }
 
@@ -403,30 +452,67 @@ export function changeList(arrList) {
     }
 }
 
-export function changePaginations(arrPaginations) {
+export function requestBigSuccess(
+    arrDataBig, 
+    numberNewPage, 
+    numberSize, 
+    numberStartSize, 
+    numberEndSize,
+    arrList,
+    arrPaginations,
+    booleanUserView
+) {
     return {
-        type: paginations,
+        type: big,
+        arrDataBig, 
+        numberNewPage, 
+        booleanUserView,
+        numberSize, 
+        numberStartSize, 
+        numberEndSize,
+        arrList,
         arrPaginations
     }
 }
 
-export function requestBigSuccess(arrDataBig) {
-    return {
-        type: big,
-        arrDataBig
-    }
-}
-
-export function requestSmallSuccess(arrDataSmall) {
+export function requestSmallSuccess(
+    arrDataSmall, 
+    numberNewPage, 
+    numberSize, 
+    numberStartSize, 
+    numberEndSize,
+    arrList,
+    arrPaginations,
+    booleanUserView
+) {
     return {
         type: small,
-        arrDataSmall
+        arrDataSmall, 
+        numberNewPage, 
+        booleanUserView,
+        numberSize, 
+        numberStartSize, 
+        numberEndSize,
+        arrList,
+        arrPaginations
     }
 }
 
-export function requestDataSuccess(arrData) {
+export function changeDeleteUser(
+    arrData,
+    arrList,
+    numberSize, 
+    numberStartSize, 
+    numberEndSize,
+    arrPaginations
+) {
     return {
-        type: data,
-        arrData
+        type: deleteUsers,
+        arrData,
+        numberSize, 
+        numberStartSize, 
+        numberEndSize,
+        arrList,
+        arrPaginations
     }
 }

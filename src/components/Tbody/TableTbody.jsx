@@ -31,9 +31,6 @@ const TableTbody = props => (
 
 function mapStateToProps(state) {
     return {
-        list: state.list.list,
-        user: state.user.user,
-        userView: state.userView.userView
     }
 }
 

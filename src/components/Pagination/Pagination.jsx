@@ -42,11 +42,11 @@ const Pagination = props => (
 
 function mapStateToProps(state) {
     return {
-        size: state.size.size,
-        startSize: state.startSize.startSize,
-        endSize: state.endSize.endSize,
-        paginations: state.paginations.paginations,
-        newPage: state.newPage.newPage,
+        size: state.variables.size,
+        startSize: state.variables.startSize,
+        endSize: state.variables.endSize,
+        paginations: state.variables.paginations,
+        newPage: state.variables.newPage,
     }
 }
 

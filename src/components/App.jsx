@@ -101,19 +101,12 @@ class App extends Component {
 
 function mapStateToProps(state) {
     return {
-        data: state.data.data,
-        dataSmall: state.dataSmall.dataSmall,
-        dataBig: state.dataBig.dataBig,
-        size: state.size.size,
-        startSize: state.startSize.startSize,
-        endSize: state.endSize.endSize,
-        list: state.list.list,
-        paginations: state.paginations.paginations,
-        newPage: state.newPage.newPage,
-        user: state.user.user,
-        userView: state.userView.userView,
-        addContact: state.addContact.addContact,
-        keys: state.keys.keys
+        list: state.variables.list,
+        paginations: state.variables.paginations,
+        user: state.variables.user,
+        userView: state.variables.userView,
+        addContact: state.variables.addContact,
+        keys: state.variables.keys
     }
 }
 
