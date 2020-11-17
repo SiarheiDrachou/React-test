@@ -205,7 +205,7 @@ export function left() {
 export function right() {
     return (dispatch, getState) => {
         const state = getState();
-        console.log(state.variables);
+
         if (state.variables.newPage < Math.ceil(state.variables.data.length / 50)) {
             dispatch(changeNewPage(
                 state.variables.newPage + 1,
