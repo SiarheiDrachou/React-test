@@ -23,6 +23,7 @@ const DropDown = props => (
 
 function mapStateToProps(state) {
     return {
+        data: state.variables.data
     }
 }
 

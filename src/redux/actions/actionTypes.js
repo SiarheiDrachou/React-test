@@ -8,3 +8,4 @@ export const userView = "userView";
 export const addContacts = "addContacts"
 export const addNewUser = "addNewUser"
 export const searchUser = "searchUser"
+export const loader = "loader"

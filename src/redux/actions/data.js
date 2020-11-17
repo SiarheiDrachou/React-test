@@ -9,24 +9,32 @@ import {
     userView,
     addContacts,
     addNewUser,
-    searchUser
+    searchUser,
+    loader
 } from './actionTypes'
 
 export function requestSmall() {
     return async (dispatch, getState) => {
         const state = getState();
 
+        dispatch(changeIsLoader(
+            true
+        ));
+
         if (state.variables.dataSmall === null) {
             await axios.get(`http://www.filltext.com/?rows=33&id={number|1000}&firstName={firstName}&lastName={lastName}&email={email}&phone={phone|(xxx)xxx-xx-xx}&address={addressObject}&description={lorem|5}`)
                 .then(res => {
                     dispatch(requestSmallSuccess(
-                        res.data, 
+                        res.data,
+                        addKeys(res.data),
                         1, 
                         sizes(res.data), 
                         startSizes(res.data, 1), 
                         endSizes(res.data, res.data, 1),
                         page(res.data, 1),
                         pagination(res.data),
+                        false,
+                        false,
                         false
                     ));
                 })
@@ -35,12 +43,15 @@ export function requestSmall() {
         else {
             dispatch(requestSmallSuccess(
                 state.variables.dataSmall, 
+                addKeys(state.variables.dataSmall),
                 1, 
                 sizes(state.variables.dataSmall), 
                 startSizes(state.variables.list, 1), 
                 endSizes(state.variables.dataSmall, state.variables.dataSmall, 1),
                 page(state.variables.dataSmall, 1),
                 pagination(state.variables.dataSmall),
+                false,
+                false,
                 false
             ));
         }
@@ -50,32 +61,41 @@ export function requestSmall() {
 export function requestBig() {
     return async (dispatch, getState) => {
         const state = getState();
+        dispatch(changeIsLoader(
+            true
+        ));
         if (state.variables.dataBig === null) {
             await axios.get(`http://www.filltext.com/?rows=1000&id={number|1000}&firstName={firstName}&lastName={lastName}&email={email}&phone={phone|(xxx)xxx-xx-xx}&address={addressObject}&description={lorem|32}`)
                 .then(res => {
                     dispatch(requestBigSuccess(
-                        res.data, 
+                        res.data,
+                        addKeys(res.data),
                         1, 
                         sizes(res.data), 
                         startSizes(res.data, 1), 
                         endSizes(page(res.data, 1), res.data, 1),
                         page(res.data, 1),
                         pagination(res.data),
-                        false
+                        false,
+                        false,
+                        true
                     ));
                 })
                 .catch(e => console.log(e));
         }
         else {
             dispatch(requestBigSuccess(
-                state.variables.dataBig, 
+                state.variables.dataBig,
+                addKeys(state.variables.dataBig),
                 1, 
                 sizes(state.variables.dataBig), 
                 startSizes(state.variables.list, 1), 
                 endSizes(page(state.variables.dataBig, 1), state.variables.dataBig, 1),
                 page(state.variables.dataBig, 1),
                 pagination(state.variables.dataBig),
-                false
+                false,
+                false,
+                true
             ));
         }
     }
@@ -156,7 +176,6 @@ export function sortDecrease(id) {
 export function nextPage(id) {
     return (dispatch, getState) => {
         const state = getState();
-        
         dispatch(changeNewPage(
             id,
             page(state.variables.data, id),
@@ -186,7 +205,7 @@ export function left() {
 export function right() {
     return (dispatch, getState) => {
         const state = getState();
-
+        console.log(state.variables);
         if (state.variables.newPage < Math.ceil(state.variables.data.length / 50)) {
             dispatch(changeNewPage(
                 state.variables.newPage + 1,
@@ -209,28 +228,19 @@ export function submitContact() {
             document.querySelector('.form')[1].value &&
             document.querySelector('.form')[2].value &&
             document.querySelector('.form')[3].value &&
-            document.querySelector('.form')[4].value &&
-            document.querySelector('.form')[5].value &&
-            document.querySelector('.form')[6].value &&
-            document.querySelector('.form')[7].value &&
-            document.querySelector('.form')[8].value
+            document.querySelector('.form')[4].value 
         ) {
             newUser['id'] = document.querySelector('.form')[0].value;
             newUser['firstName'] = document.querySelector('.form')[1].value;
             newUser['lastName'] = document.querySelector('.form')[2].value;
             newUser['phone'] = document.querySelector('.form')[3].value;
             newUser['email'] = document.querySelector('.form')[4].value;
-            newUser['address'] = new Object();
-            newUser['address']['city'] = document.querySelector('.form')[5].value;
-            newUser['address']['state'] = document.querySelector('.form')[6].value;
-            newUser['address']['streetAddress'] = document.querySelector('.form')[7].value;
-            newUser['address']['zip'] = document.querySelector('.form')[8].value;
             newData = [...state.variables.data];
-            newData.push(newUser);
+            newData.unshift(newUser);
 
             dispatch(changeAddUser(
                 newData,
-                page(newData, state.variables.newPage),
+                page(newData, 1),
                 sizes(newData),
                 startSizes(page(newData, state.variables.newPage), state.variables.newPage),
                 endSizes(page(newData, state.variables.newPage), newData, state.variables.newPage),
@@ -307,9 +317,8 @@ function scroll() {
 function addKeys(data) {
     let arrKeys = [];
 
-    arrKeys.push(...Object.keys(data[0]), ...Object.keys(data[0]['address']));
+    arrKeys.push(...Object.keys(data[0]));
     arrKeys.splice(5, 2);
-    arrKeys.push('description');
 
     return arrKeys;
 }
@@ -384,11 +393,10 @@ export function changeSearchUser(
     }
 }
 
-export function changeAdd(booleanAdd, arrKeys ) {
+export function changeAdd(booleanAdd) {
     return {
         type: addContacts,
-        booleanAdd, 
-        arrKeys
+        booleanAdd
     }
 }
 
@@ -453,48 +461,60 @@ export function changeList(arrList) {
 }
 
 export function requestBigSuccess(
-    arrDataBig, 
+    arrDataBig,
+    arrKeys,
     numberNewPage, 
     numberSize, 
     numberStartSize, 
     numberEndSize,
     arrList,
     arrPaginations,
-    booleanUserView
+    booleanUserView,
+    booleanLoader,
+    booleanIsPagination
 ) {
     return {
         type: big,
-        arrDataBig, 
+        arrDataBig,
+        arrKeys,
         numberNewPage, 
         booleanUserView,
         numberSize, 
         numberStartSize, 
         numberEndSize,
         arrList,
-        arrPaginations
+        arrPaginations,
+        booleanLoader,
+        booleanIsPagination
     }
 }
 
 export function requestSmallSuccess(
-    arrDataSmall, 
+    arrDataSmall,
+    arrKeys,
     numberNewPage, 
     numberSize, 
     numberStartSize, 
     numberEndSize,
     arrList,
     arrPaginations,
-    booleanUserView
+    booleanUserView,
+    booleanLoader,
+    booleanIsPagination
 ) {
     return {
         type: small,
-        arrDataSmall, 
+        arrDataSmall,
+        arrKeys,
         numberNewPage, 
         booleanUserView,
         numberSize, 
         numberStartSize, 
         numberEndSize,
         arrList,
-        arrPaginations
+        arrPaginations,
+        booleanLoader,
+        booleanIsPagination
     }
 }
 
@@ -514,5 +534,14 @@ export function changeDeleteUser(
         numberEndSize,
         arrList,
         arrPaginations
+    }
+}
+
+export function changeIsLoader(
+    booleanLoader
+) {
+    return {
+        type: loader,
+        booleanLoader
     }
 }

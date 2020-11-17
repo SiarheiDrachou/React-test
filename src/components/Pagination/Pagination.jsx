@@ -4,7 +4,7 @@ import { left, right, nextPage } from '../../redux/actions/data';
 import './Pagination.scss'
 
 const Pagination = props => (
-    <ul className="pagination">
+    <ul className={props.isPagination ? "pagination" : "pagination pagination--min"}>
         <li
             className="pagination__item"
             style={{ minWidth: '150px' }}
@@ -42,11 +42,13 @@ const Pagination = props => (
 
 function mapStateToProps(state) {
     return {
+        data: state.variables.data,
         size: state.variables.size,
         startSize: state.variables.startSize,
         endSize: state.variables.endSize,
         paginations: state.variables.paginations,
         newPage: state.variables.newPage,
+        isPagination: state.variables.isPagination
     }
 }
 

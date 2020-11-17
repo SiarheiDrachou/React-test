@@ -31,6 +31,7 @@ const TableTbody = props => (
 
 function mapStateToProps(state) {
     return {
+        data: state.variables.data
     }
 }
 

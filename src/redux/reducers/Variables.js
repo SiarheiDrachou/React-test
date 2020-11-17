@@ -8,7 +8,8 @@ import {
     userView,
     addContacts,
     addNewUser,
-    searchUser
+    searchUser,
+    loader
 } from '../actions/actionTypes'
 
 const initialState = {
@@ -23,7 +24,9 @@ const initialState = {
     endSize: null,
     userView: false,
     addContact: false,
-    keys: []
+    keys: [],
+    isLoader: false,
+    isPagination: false
 }
 
 export default function DataBigReducer(state = initialState, action) {
@@ -31,13 +34,12 @@ export default function DataBigReducer(state = initialState, action) {
         case addContacts:
             return {
                 ...state,
-                addContact: action.booleanAdd,
-                keys: action.arrKeys
+                addContact: action.booleanAdd
             }
         case addNewUser:
             return {
                 ...state,
-                data: action.arrDataSmall,
+                data: action.arrData,
                 list: action.arrList,
                 paginations: action.arrPaginations,
                 size: action.numberSize,
@@ -49,14 +51,17 @@ export default function DataBigReducer(state = initialState, action) {
             return {
                 ...state,
                 dataBig: action.arrDataBig,
-                data: action.arrDataSmall,
+                data: action.arrDataBig,
                 newPage: action.numberNewPage,
                 list: action.arrList,
                 paginations: action.arrPaginations,
                 size: action.numberSize,
                 startSize: action.numberStartSize,
                 endSize: action.numberEndSize,
-                userView: action.booleanUserView
+                userView: action.booleanUserView,
+                isLoader: action.booleanLoader,
+                keys: action.arrKeys,
+                isPagination: action.booleanIsPagination
             }
         case small:
             return {
@@ -69,7 +74,10 @@ export default function DataBigReducer(state = initialState, action) {
                 size: action.numberSize,
                 startSize: action.numberStartSize,
                 endSize: action.numberEndSize,
-                userView: action.booleanUserView
+                userView: action.booleanUserView,
+                isLoader: action.booleanLoader,
+                keys: action.arrKeys,
+                isPagination: action.booleanIsPagination
             }
         case deleteUsers:
             return {
@@ -116,6 +124,11 @@ export default function DataBigReducer(state = initialState, action) {
             return {
                 ...state,
                 userView: action.booleanView
+            }
+        case loader:
+            return {
+                ...state,
+                isLoader: action.booleanLoader
             }
         default:
             return state

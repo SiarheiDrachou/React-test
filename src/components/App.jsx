@@ -6,6 +6,7 @@ import Pagination from './Pagination/Pagination';
 import Contact from './ContactInfo/Contact'
 import InputForm from './Form/InputForm'
 import SearchContact from './Search/SearchContact'
+import Loader from './Loader/Loader'
 import './App.scss'
 import { connect } from 'react-redux'
 import {viewForm, submitContact, cancel} from '../redux/actions/data';
@@ -15,6 +16,12 @@ class App extends Component {
         return (
             <div className="container scroll">
                 <DropDown />
+
+                {
+                    this.props.isLoader
+                    ? <Loader />
+                    : null
+                }
                 
                 {
                     this.props.list
@@ -64,7 +71,22 @@ class App extends Component {
                 {
                     this.props.list
                         ? <table className="table w-75 mx-auto">
-                            <TableThead />
+                            <thead className="thead-dark w-50">
+                                <tr>
+                                    {
+                                        this.props.keys.map((head, index) => {
+                                            return (
+                                                <TableThead
+                                                    key={index}
+                                                    head={head}
+                                                    id={index}
+                                                />
+                                            )
+                                        })
+                                    }
+                                    <th></th>
+                                </tr>
+                            </thead>
 
                             <tbody className="table-body w-75">
                                 {
@@ -101,12 +123,14 @@ class App extends Component {
 
 function mapStateToProps(state) {
     return {
+        data: state.variables.data,
         list: state.variables.list,
         paginations: state.variables.paginations,
         user: state.variables.user,
         userView: state.variables.userView,
         addContact: state.variables.addContact,
-        keys: state.variables.keys
+        keys: state.variables.keys,
+        isLoader: state.variables.isLoader
     }
 }
 
